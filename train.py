@@ -65,8 +65,8 @@ def train_generator(epoch, opt, datasets_generator, fuse_model, generator_loss, 
                 G_loss.backward()
                 opt.step()
                 all_loss = all_loss + G_loss
-                debug(epoch, data, generator_feats,
-                      mean=generator_train_config['mean'], std=generator_train_config['std'])
+                # debug(epoch, data, generator_feats,
+                #       mean=generator_train_config['mean'], std=generator_train_config['std'])
                 train_Generator_bar.set_description('\tepoch:%s Train_G iter:%s loss:%.5f' %
                                                     (epoch, index, all_loss / num_iter))
                 train_Generator_bar.update(1)
