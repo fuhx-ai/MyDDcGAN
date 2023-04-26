@@ -14,7 +14,7 @@ if __name__ == '__main__':
     vis_img = trans(vis_img)
     inf_img = trans(inf_img)
     data = {'Vis': vis_img.unsqueeze(0), 'Inf': inf_img.unsqueeze(0)}
-    GAN_Model.Generator.load_state_dict(torch.load('./weights/GAN_G1_D2_ConvDesc/Generator/Generator_1.pth'))
+    GAN_Model.Generator.load_state_dict(torch.load('./weights/GAN_G1_D2_ConvDesc/Generator/Generator_377.pth'))
     GAN_Model.eval()
     Generator_feats, _, _ = GAN_Model(data)
     untrans = transforms.Compose([transforms.ToPILImage()])
