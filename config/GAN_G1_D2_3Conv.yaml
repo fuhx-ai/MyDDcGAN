@@ -311,7 +311,7 @@ Struct:
       same_weight: False
       use_residual: False
       use_bn: False
-      use_activation: ReLU
+      use_activation: Tanh
       parameters:
         in_channels: 512
         out_channels: 1
@@ -428,7 +428,7 @@ Struct:
       same_weight: False
       use_residual: False
       use_bn: False
-      use_activation: ReLU
+      use_activation: Tanh
       parameters:
         in_channels: 512
         out_channels: 1

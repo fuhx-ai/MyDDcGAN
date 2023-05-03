@@ -8,6 +8,7 @@
 
 
 from torch import nn
+from core.loss.loss import L_G
 
 
 class GeneratorLoss(nn.Module):
@@ -32,5 +33,7 @@ class GeneratorLoss(nn.Module):
         loss_adv = 0
         for i in disc_name:
             loss_adv = loss_adv + self.MSELoss(disc[i], conf[i])
+
+
 
         return self.Loss_Dist_weight * loss_dist + self.Loss_adv_weight * loss_adv

@@ -75,7 +75,7 @@ def train_generator(epoch, opt, datasets_generator, fuse_model, generator_loss, 
 
 
 def runner():
-    project_name = 'GAN_G1_D2_ConvDesc'
+    project_name = 'GAN_G1_D2_3Conv'
 
     try:
         os.mkdir(f'./weights/{project_name}/')
