@@ -28,8 +28,8 @@ def train_discriminator(epoch, opt, datasets_generator, fuse_model, disc_loss_fn
                 if torch.cuda.is_available():
                     for i in data:
                         data[i] = data[i].cuda()
-                generator_feats, discriminator_feats, confidence = fuse_model(
-                    data)  # {'Generator_1': [2,3,512,512]}, {d_1:(4,), d_2:{4,}, {d_1:(4,), d_2:{4,}}
+                generator_feats, discriminator_feats, confidence = fuse_model(data)
+                # {'Generator_1': [2,3,512,512]}, {d_1:(4,), d_2:{4,}, {d_1:(4,), d_2:{4,}}
                 D_loss = disc_loss_fn(generator_feats, discriminator_feats, confidence)
                 opt.zero_grad()
                 D_loss.backward()
@@ -96,11 +96,11 @@ def runner():
 
     mean, std = datasets_config['mean'], datasets_config['std']
     input_size = datasets_config['input_size']
-    train_dataloader = FusionDataset(root_dir=datasets_config['root_dir'], sensors=datasets_config['sensors'],
-                                     transform=transforms.Compose([transforms.Resize((input_size, input_size)),
-                                                                   transforms.ToTensor(),
-                                                                   transforms.Normalize(mean, std)]))
-    train_loader = DataLoader(train_dataloader, batch_size=base_train_config['batch_size'], shuffle=False)
+    train_dataset = FusionDataset(root_dir=datasets_config['root_dir'], sensors=datasets_config['sensors'],
+                                  transform=transforms.Compose([transforms.Resize((input_size, input_size)),
+                                                                transforms.ToTensor(),
+                                                                transforms.Normalize(mean, std)]))
+    train_loader = DataLoader(train_dataset, batch_size=base_train_config['batch_size'], shuffle=False)
 
     g_loss = GeneratorLoss(generator_config)
     d_loss = DiscriminatorLoss(discriminator_config)
