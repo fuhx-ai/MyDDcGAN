@@ -27,8 +27,9 @@ def debug(epoch, input_dict, output_tensors, mean, std):
 			img_tensor = img_tensor * std_t + mean_t
 			untrans = transforms.Compose([transforms.ToPILImage()])
 			img = untrans(img_tensor)
-			try:
-				os.mkdir(f'./debug/{epoch}/')
-			except:
-				pass
-			img.save(f'./debug/{epoch}/{name}_{randam_string(10)}.jpg')
+			# try:
+			# 	os.mkdir(f'./debug/{epoch}/')
+			# except:
+			# 	pass
+			# img.save(f'./debug/{epoch}/{name}_{randam_string(10)}.jpg')
+			return img
