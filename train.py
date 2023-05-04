@@ -54,10 +54,6 @@ class Trainer:
                     'disc_iter': self.disc_iter
                 })
         self.disc_loss_ep = min_loss
-        wandb.log({
-            'disc_loss': self.disc_loss_ep,
-            'epoch': epoch
-        })
 
     def train_generator(self, epoch, opt, train_loader, fuse_model, generator_loss, generator_train_config):
         for i in fuse_model.Generator.parameters():
@@ -71,6 +67,7 @@ class Trainer:
         min_loss = min_loss_per_epoch
         while train_times < train_times_per_epoch and min_loss >= min_loss_per_epoch:
             all_loss = 0
+            img_record = 0
             with tqdm(total=num_iter) as train_Generator_bar:
                 for index, data in enumerate(train_loader):
                     if torch.cuda.is_available():
@@ -83,16 +80,22 @@ class Trainer:
                     G_loss.backward()
                     opt.step()
                     all_loss = all_loss + G_loss
+
+                    # 记录训练过程中的图像融合情况
                     img = debug(epoch, data, generator_feats,
                                 mean=generator_train_config['mean'], std=generator_train_config['std'])
+                    while img_record < 5:
+                        Img = wandb.Image(img, caption="epoch:{}".format(epoch))
+                        wandb.log({
+                            "fuse": Img
+                        })
+                        img_record += 1
+
                     train_Generator_bar.set_description('\tepoch:%s Train_G iter:%s loss:%.5f' %
                                                         (epoch, index, all_loss / num_iter))
                     train_Generator_bar.update(1)
                 min_loss = all_loss / num_iter
                 train_times += 1
-
-                Img = wandb.Image(img, caption="epoch:{}".format(epoch))
-                wandb.log({"fuse": Img})
                 self.gene_iter += 1
                 wandb.log({
                     'gene_iter_loss': min_loss,
@@ -100,6 +103,7 @@ class Trainer:
                 })
         self.gene_loss_ep = min_loss
         wandb.log({
+            'disc_loss': self.disc_loss_ep,
             'gene_loss': self.gene_loss_ep,
             'epoch': epoch
         })
