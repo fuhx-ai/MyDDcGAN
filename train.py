@@ -82,8 +82,7 @@ class Trainer:
                     all_loss = all_loss + G_loss
 
                     # 记录训练过程中的图像融合情况
-                    img = debug(epoch, data, generator_feats,
-                                mean=generator_train_config['mean'], std=generator_train_config['std'])
+                    img = debug(epoch, data, generator_feats)
                     while img_record < 5:
                         Img = wandb.Image(img, caption="epoch:{}".format(epoch))
                         wandb.log({
@@ -109,7 +108,7 @@ class Trainer:
         })
 
     def runner(self):
-        project_name = 'GAN_G1_D2_3Conv'
+        project_name = 'GAN_G1_D2_grey'
         wandb.init(project=project_name)
 
         try:
@@ -129,12 +128,8 @@ class Trainer:
         generator_train_config = config['Train']['Generator']
         discriminator_train_config = config['Train']['Discriminator']
 
-        mean, std = datasets_config['mean'], datasets_config['std']
-        input_size = datasets_config['input_size']
-        train_dataset = FusionDataset(root_dir=datasets_config['root_dir'], sensors=datasets_config['sensors'],
-                                      transform=transforms.Compose([transforms.Resize((input_size, input_size)),
-                                                                    transforms.ToTensor(),
-                                                                    transforms.Normalize(mean, std)]))
+        train_dataset = FusionDataset(mode='train',
+                                      config=datasets_config)
         train_loader = DataLoader(train_dataset, batch_size=base_train_config['batch_size'], shuffle=False)
 
         g_loss = GeneratorLoss(generator_config)

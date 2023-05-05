@@ -18,7 +18,7 @@ class GeneratorLoss(nn.Module):
         super().__init__()
         self.adv_weight = generator_cfg['Loss_adv_weight']
         self.con_weight = generator_cfg['Loss_Dist_weight']
-        self.Dist_Loss = generator_cfg['Dist_Loss']
+        self.Dist_Loss = generator_cfg['Dist_Loss']  # [['Generator_1','Vis'],['Generator_1','Inf']]
         self.MSELoss = nn.MSELoss()
         self.l_adv_g = L_adv_G()
         self.l_con_g = L_con()

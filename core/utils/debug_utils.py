@@ -12,7 +12,7 @@ def randam_string(num):
 	return salt
 
 
-def debug(epoch, input_dict, output_tensors, mean, std):
+def debug(epoch, input_dict, output_tensors):
 	output_names = [i for i in output_tensors]
 	batch_size, C, W, H = output_tensors[output_names[0]].shape
 	for name in output_names:
@@ -22,9 +22,6 @@ def debug(epoch, input_dict, output_tensors, mean, std):
 			input_vis_tensor = input_dict['Vis'][i, :, :, :].data.cpu()
 			input_inf_tensor = input_dict['Inf'][i, :, :, :].data.cpu()
 			img_tensor = torch.cat([input_vis_tensor, input_inf_tensor, tensor], dim=2)
-			mean_t = torch.FloatTensor(mean).view(3, 1, 1).expand(img_tensor.shape)
-			std_t = torch.FloatTensor(std).view(3, 1, 1).expand(img_tensor.shape)
-			img_tensor = img_tensor * std_t + mean_t
 			untrans = transforms.Compose([transforms.ToPILImage()])
 			img = untrans(img_tensor)
 			# try:
