@@ -13,6 +13,7 @@ Train:
   Generator:
     lr: 0.01
     opt: RMSprop
+    warm_up_epoch: 10
     train_times_per_epoch: 5
     min_loss_per_epoch: 0
     mean: [0.485, 0.456, 0.406]

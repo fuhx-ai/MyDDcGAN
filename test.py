@@ -1,24 +1,28 @@
+from pathlib import Path
+
+import numpy as np
 import torch
 from PIL import Image
 from torchvision import transforms
 from core.model import FuseModel
 from core.utils.config import load_config
+import math
+import matplotlib.pyplot as plt
 
 
 if __name__ == '__main__':
-    config = load_config('config/GAN_G1_D2_3Conv.yaml')
-    GAN_Model = FuseModel(config, val=True)
-    vis_img = Image.open('demo/test_vis.jpg')
-    inf_img = Image.open('demo/test_inf.jpg')
-    trans = transforms.Compose([transforms.Resize((480, 640)), transforms.ToTensor()])
-    vis_img = trans(vis_img)
-    inf_img = trans(inf_img)
-    data = {'Vis': vis_img.unsqueeze(0), 'Inf': inf_img.unsqueeze(0)}
-    GAN_Model.Generator.load_state_dict(torch.load('weights/GAN_G1_D2_3Conv/generator/generator_57.pth'))
-    GAN_Model.eval()
-    Generator_feats, _, _ = GAN_Model(data)
-    untrans = transforms.Compose([transforms.ToPILImage()])
+    # 设置warm up的轮次为10次
+    warm_up_iter = 10
+    T_max = 100  # 周期
+    lr_max = 0.1  # 最大值
+    lr_min = 1e-5  # 最小值
 
-    img = untrans(Generator_feats['Generator_1'][0])
-    print(img.size)
-    img.save('./demo/test_result.jpg')
+    lambda0 = lambda cur_iter: cur_iter / warm_up_iter if cur_iter < warm_up_iter else \
+        (lr_min + 0.5 * (lr_max - lr_min) * (
+                    1.0 + math.cos((cur_iter - warm_up_iter) / (T_max - warm_up_iter) * math.pi))) / 0.1
+    lr = []
+    for i in range(100):
+        y = lambda0(i)
+        lr.append(y)
+    plt.plot(np.arange(100), np.array(lr))
+    plt.show()
