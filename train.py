@@ -10,7 +10,7 @@ import torch.optim as optim
 from core.model import FuseModel
 from torchvision import transforms
 from torch.utils.data import DataLoader
-from core.utils import load_config, debug
+from core.utils import load_config, debug, debug_color
 from core.dataset.fusionDataset import FusionDataset
 from core.loss import GeneratorLoss, DiscriminatorLoss
 
@@ -149,13 +149,26 @@ class Trainer:
                     all_loss = all_loss + G_loss
 
                     # 记录训练过程中的图像融合情况
-                    img = debug(self.epoch, data, generator_feats)
-                    if img_record < 5:
-                        Img = wandb.Image(img, caption="epoch:{}".format(self.epoch))
-                        self.runs.log({
-                            "fuse": Img
-                        })
-                        img_record += 1
+                    if self.datasets_config['color']:
+                        vis_i, ir_i, fuse_i = debug_color(self.epoch, data, generator_feats)
+                        if img_record < 5:
+                            vis = wandb.Image(vis_i, caption="epoch:{}".format(self.epoch))
+                            ir = wandb.Image(ir_i, caption="epoch:{}".format(self.epoch))
+                            fuse = wandb.Image(fuse_i, caption="epoch:{}".format(self.epoch))
+                            self.runs.log({
+                                "vis": vis,
+                                "ir": ir,
+                                "fuse": fuse
+                            })
+                            img_record += 1
+                    else:
+                        img = debug(self.epoch, data, generator_feats)
+                        if img_record < 5:
+                            Img = wandb.Image(img, caption="epoch:{}".format(self.epoch))
+                            self.runs.log({
+                                "fuse": Img
+                            })
+                            img_record += 1
 
                     train_Generator_bar.set_description('\tepoch:%s Train_G iter:%s loss:%.5f' %
                                                         (self.epoch, index, all_loss / num_iter))
@@ -172,7 +185,7 @@ class Trainer:
 
 
 if __name__ == '__main__':
-    trainer = Trainer(project_name='GAN_G1_D2_grey_tst',
-                      config_path='./config/GAN_G1_D2_grey.yaml',
+    trainer = Trainer(project_name='GAN_G1_D2_COLOR',
+                      config_path='./config/GAN_G1_D2_color.yaml',
                       wandb_key=f'49deeeb7e29fb1acb9e77e00885bc52d739dee0f')
     trainer.runer()

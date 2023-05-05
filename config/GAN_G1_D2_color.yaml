@@ -1,9 +1,8 @@
 Dataset:
-  root_dir: datasets/TNO/
+  root_dir: datasets/M3FD/
   sensors: ['Vis', 'Inf']
   input_size: 512
-  mean: [0.485, 0.456, 0.406]
-  std: [0.229, 0.224, 0.225]
+  color: True
 
 Train:
   Base:
@@ -12,10 +11,9 @@ Train:
   Generator:
     lr: 0.01
     opt: RMSprop
+    warm_up_epoch: 10
     train_times_per_epoch: 5
     min_loss_per_epoch: 0
-    mean: [0.485, 0.456, 0.406]
-    std: [0.229, 0.224, 0.225]
 
   Discriminator:
     lr: 0.001
@@ -49,7 +47,7 @@ Struct:
       use_bn: True
       use_activation: ReLU
       parameters:
-        in_channels: 6
+        in_channels: 2
         out_channels: 64
         kernel_size: 3
         stride: 1
@@ -196,7 +194,7 @@ Struct:
       use_activation: Tanh
       parameters:
         in_channels: 32
-        out_channels: 3
+        out_channels: 1
         kernel_size: 3
         stride: 1
         padding: 1
@@ -215,7 +213,7 @@ Struct:
       use_bn: True
       use_activation: ReLU
       parameters:
-        in_channels: 3
+        in_channels: 1
         out_channels: 16
         kernel_size: 3
         stride: 2
@@ -311,7 +309,7 @@ Struct:
       same_weight: False
       use_residual: False
       use_bn: False
-      use_activation: ReLU
+      use_activation: Tanh
       parameters:
         in_channels: 512
         out_channels: 1
@@ -332,7 +330,7 @@ Struct:
       use_bn: True
       use_activation: ReLU
       parameters:
-        in_channels: 3
+        in_channels: 1
         out_channels: 16
         kernel_size: 3
         stride: 2
@@ -428,7 +426,7 @@ Struct:
       same_weight: False
       use_residual: False
       use_bn: False
-      use_activation: ReLU
+      use_activation: Tanh
       parameters:
         in_channels: 512
         out_channels: 1

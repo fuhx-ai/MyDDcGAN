@@ -30,8 +30,6 @@ class FusionDataset(Dataset):
         self.img_list = {i: os.listdir(os.path.join(self.root_dir, i)) for i in self.sensors}
         self.img_path = {i: [os.path.join(self.root_dir, i, j) for j in os.listdir(os.path.join(self.root_dir, i))]
                          for i in self.sensors}
-
-        self.mean, self.std = config['mean'], config['std']
         self.input_size = config['input_size']
 
     def __getitem__(self, index):
