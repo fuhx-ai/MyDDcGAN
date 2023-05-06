@@ -18,7 +18,7 @@ from core.loss import GeneratorLoss, DiscriminatorLoss
 class Trainer:
     def __init__(self, project_name, config_path: str | Path, wandb_key: str):
         self.project_name = project_name
-        self.runs = wandb.init(project=self.project_name)
+        self.runs = wandb.init(project=self.project_name, wandb_key=wandb_key)
         self.gen_path = Path('weights') / self.project_name / 'generator'
         self.disc_path = Path('weights') / self.project_name / 'discriminator'
         self.gen_path.mkdir(parents=True, exist_ok=True)
@@ -48,17 +48,8 @@ class Trainer:
             self.discriminator.parameters(),
             self.discriminator_train_config['lr'])
 
-        # 设置warm up的轮次为100次
-        warm_up_iter = self.generator_train_config['warm_up_epoch']
-        t_max = self.base_train_config['epoch']  # 周期
-        lr_max = 0.1  # 最大值
-        lr_min = 1e-5  # 最小值
-
-        # 为param_groups[0] (即model.layer2) 设置学习率调整规则 - Warm up + Cosine Anneal
-        gene_lr_fn = lambda cur_iter: cur_iter / warm_up_iter if cur_iter < warm_up_iter else \
-            (lr_min + 0.5 * (lr_max - lr_min) * (
-                        1.0 + math.cos((cur_iter - warm_up_iter) / (t_max - warm_up_iter) * math.pi))) / 0.1
-        self.gene_scheduler = LambdaLR(self.opt_generator, lr_lambda=gene_lr_fn)
+        #  设置学习率调整规则 - Warm up + Cosine Anneal
+        self.gene_scheduler = LambdaLR(self.opt_generator, lr_lambda=self.get_learning_rate)
 
         self.epoch = 1
         self.disc_loss_ep = 0
@@ -71,8 +62,9 @@ class Trainer:
             self.epoch = epoch
             self.train_discriminator()
             self.train_generator()
-            torch.save(self.generator.state_dict(), self.gen_path / f'generator_{self.epoch}.pth')
-            torch.save(self.discriminator.state_dict(), self.disc_path / f'discriminator_{self.epoch}.pth')
+            if epoch > 90:  #
+                torch.save(self.generator.state_dict(), self.gen_path / f'generator_{self.epoch}.pth')
+                torch.save(self.discriminator.state_dict(), self.disc_path / f'discriminator_{self.epoch}.pth')
             self.runs.log({
                 'disc_loss': self.disc_loss_ep,
                 'gene_loss': self.gene_loss_ep,
@@ -182,6 +174,17 @@ class Trainer:
                 })
         self.gene_scheduler.step()
         self.gene_loss_ep = min_loss
+
+    def get_learning_rate(self, cur_iter):
+        warm_up_iter = self.generator_train_config['warm_up_epoch']  # 设置warm up的轮次
+        t_max = self.base_train_config['epoch']  # 周期
+        lr_max = 0.1  # 最大值
+        lr_min = 1e-5  # 最小值
+        if cur_iter < warm_up_iter:
+            return cur_iter / warm_up_iter
+        else:
+            cosine_decay = 0.5 * (1.0 + math.cos((cur_iter - warm_up_iter) / (t_max - warm_up_iter) * math.pi))
+            return (lr_min + (lr_max - lr_min) * cosine_decay) / 0.1
 
 
 if __name__ == '__main__':
