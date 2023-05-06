@@ -7,6 +7,7 @@
 # @Version : 0.1
 
 import os
+from copy import deepcopy
 from typing import Literal
 
 import torch
@@ -38,24 +39,31 @@ class FusionDataset(Dataset):
             ]) if self.mode == 'train' else transforms.Compose([
                 transforms.Resize([self.input_size, self.input_size]),
             ])
-        sample = {}
         for i in self.sensors:
             if i == 'Inf':
                 ir = gray_read(self.img_path[i][index])
                 ir = trans(ir)
-                sample.update({i: ir})
             else:
                 if self.color:
                     vi, cbcr = ycbcr_read(self.img_path[i][index])
                     vi = trans(vi)
                     cbcr = trans(cbcr)
-                    sample.update({i: vi})
-                    sample.update({'CBCR': cbcr})
                 else:
                     vi = gray_read(self.img_path[i][index])
                     vi = trans(vi)
-                    sample.update({i: vi})
-        return sample
+        if self.color:
+            sample = {
+                'Inf': ir,
+                'Vis': vi,
+                'CBCR': cbcr
+            }
+        else:
+            sample = {
+                'Inf': ir,
+                'Vis': vi,
+            }
+        sample_1 = deepcopy(sample)
+        return sample_1
 
     def __len__(self):
         img_num = [len(self.img_list[i]) for i in self.img_list]

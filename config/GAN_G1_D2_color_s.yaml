@@ -6,19 +6,19 @@ Dataset:
 
 Train:
   Base:
-    batch_size: 8
+    batch_size: 4
     epoch: 100
   Generator:
     lr: 0.01
     opt: RMSprop
     warm_up_epoch: 10
-    train_times_per_epoch: 5
+    train_times_per_epoch: 1
     min_loss_per_epoch: 0
 
   Discriminator:
     lr: 0.001
     opt: SGD
-    train_times_per_epoch: 5
+    train_times_per_epoch: 1
     min_loss_per_epoch: 0.1
 
 Generator:

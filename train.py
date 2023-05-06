@@ -37,7 +37,8 @@ class Trainer:
                                            config=self.datasets_config)
         self.train_loader = DataLoader(self.train_dataset,
                                        batch_size=self.base_train_config['batch_size'],
-                                       shuffle=False)
+                                       shuffle=False,
+                                       num_workers=0)
         self.g_loss = GeneratorLoss(self.generator_config)
         self.d_loss = DiscriminatorLoss(self.discriminator_config)
         self.generator, self.discriminator = self.fuse_model.Generator.cuda(), self.fuse_model.Discriminator.cuda() \
@@ -63,7 +64,7 @@ class Trainer:
             self.epoch = epoch
             self.train_discriminator()
             self.train_generator()
-            if epoch > 90:  #
+            if epoch > 90:  # 保存训练的权重
                 torch.save(self.generator.state_dict(), self.gen_path / f'generator_{self.epoch}.pth')
                 torch.save(self.discriminator.state_dict(), self.disc_path / f'discriminator_{self.epoch}.pth')
             self.runs.log({
@@ -102,7 +103,7 @@ class Trainer:
                     self.opt_discriminator.zero_grad()
                     D_loss.backward()
                     self.opt_discriminator.step()
-                    all_loss = all_loss + D_loss
+                    all_loss = all_loss + D_loss.item()
                     train_Discriminator_bar.set_description('\tepoch:%s Train_D iter:%s loss:%.5f' %
                                                             (self.epoch, index, all_loss / num_iter))
                     train_Discriminator_bar.update(1)
@@ -139,12 +140,12 @@ class Trainer:
                     self.opt_generator.zero_grad()
                     G_loss.backward()
                     self.opt_generator.step()
-                    all_loss = all_loss + G_loss
+                    all_loss = all_loss + G_loss.item()
 
                     # 记录训练过程中的图像融合情况
-                    if self.datasets_config['color']:
-                        vis_i, ir_i, fuse_i = debug_color(self.epoch, data, generator_feats)
-                        if img_record < 5:
+                    if img_record < 5:
+                        if self.datasets_config['color']:
+                            vis_i, ir_i, fuse_i = debug_color(self.epoch, data, generator_feats)
                             vis = wandb.Image(vis_i, caption="epoch:{}".format(self.epoch))
                             ir = wandb.Image(ir_i, caption="epoch:{}".format(self.epoch))
                             fuse = wandb.Image(fuse_i, caption="epoch:{}".format(self.epoch))
@@ -154,9 +155,8 @@ class Trainer:
                                 "fuse": fuse
                             })
                             img_record += 1
-                    else:
-                        img = debug(self.epoch, data, generator_feats)
-                        if img_record < 5:
+                        else:
+                            img = debug(self.epoch, data, generator_feats)
                             Img = wandb.Image(img, caption="epoch:{}".format(self.epoch))
                             self.runs.log({
                                 "fuse": Img
