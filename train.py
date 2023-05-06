@@ -18,7 +18,8 @@ from core.loss import GeneratorLoss, DiscriminatorLoss
 class Trainer:
     def __init__(self, project_name, config_path: str | Path, wandb_key: str):
         self.project_name = project_name
-        self.runs = wandb.init(project=self.project_name, wandb_key=wandb_key)
+        wandb.login(key=wandb_key)  # wandb api key
+        self.runs = wandb.init(project=self.project_name)
         self.gen_path = Path('weights') / self.project_name / 'generator'
         self.disc_path = Path('weights') / self.project_name / 'discriminator'
         self.gen_path.mkdir(parents=True, exist_ok=True)
@@ -189,6 +190,6 @@ class Trainer:
 
 if __name__ == '__main__':
     trainer = Trainer(project_name='GAN_G1_D2_COLOR',
-                      config_path='./config/GAN_G1_D2_color.yaml',
+                      config_path='./config/GAN_G1_D2_color_s.yaml',
                       wandb_key=f'49deeeb7e29fb1acb9e77e00885bc52d739dee0f')
     trainer.runer()
