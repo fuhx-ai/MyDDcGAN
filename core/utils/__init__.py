@@ -9,5 +9,6 @@ __all__ = [
 	'debug',
 	'gray_read',
 	'ycbcr_read',
-	'img_write'
+	'img_write',
+	'debug_color'
 ]

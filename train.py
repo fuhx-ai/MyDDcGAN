@@ -190,6 +190,6 @@ class Trainer:
 
 if __name__ == '__main__':
     trainer = Trainer(project_name='GAN_G1_D2_COLOR',
-                      config_path='./config/GAN_G1_D2_color_s.yaml',
+                      config_path='./config/GAN_G1_D2_color.yaml',
                       wandb_key=f'49deeeb7e29fb1acb9e77e00885bc52d739dee0f')
     trainer.runer()

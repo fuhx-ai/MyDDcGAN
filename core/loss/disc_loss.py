@@ -19,10 +19,7 @@ class DiscriminatorLoss(nn.Module):
         self.l_di = L_Di()
 
     def forward(self, gene, disc, conf):
-        # Generator = Generator['Generator']
-        # Generator_name = [i for i in Generator]
         # disc_name = [i for i in disc]
-        #
         # loss_adv = 0
         # for i in disc_name:
         #     loss_adv = loss_adv + self.MSELoss(disc[i], conf[i])

@@ -8,6 +8,9 @@ Train:
   Base:
     batch_size: 2
     epoch: 100
+    continue: False
+    gene_path: 'weights/generator_96.pth'
+    disc_path: 'weights/discriminator_96.pth'
   Generator:
     lr: 0.01
     opt: RMSprop

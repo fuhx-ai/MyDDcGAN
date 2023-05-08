@@ -31,6 +31,9 @@ class FuseModel(nn.Module):
         self.Discriminator_input = {D: input for D, input in
                                     zip(self.Discriminator_name, discriminator_config['Input_Datasets'])}
         self.Discriminator = nn.ModuleDict({i: Model({i: config['Struct'][i]}) for i in self.Discriminator_name})
+        if config['Train']['Base']['continue'] and not val:
+            self.Generator.load_state_dict(torch.load(config['Train']['Base']['gene_path']))
+            self.Discriminator.load_state_dict(torch.load(config['Train']['Base']['disc_path']))
 
     def forward(self, inputs):
 

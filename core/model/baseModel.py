@@ -65,6 +65,7 @@ class ConvBlock(nn.Module):
 
         if self.use_activation == 'Tanh':
             feat = feat / 2 + 0.5
+            feat = 0.999 * feat
 
         feats.update({self.layer_name: feat})
         return feats
