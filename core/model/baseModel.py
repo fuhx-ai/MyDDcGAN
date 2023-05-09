@@ -71,6 +71,32 @@ class ConvBlock(nn.Module):
         return feats
 
 
+class LinearBlock(nn.Module):
+    def __init__(self, layer_name, config):
+        super().__init__()
+        self.layer_name = layer_name
+        self.pre_flatten = config['pre_flatten']
+        self.use_activation = config['use_activation']
+        self.parameters = config['parameters']
+        self.flatten = nn.Flatten()
+        self.linear = nn.Linear(**self.parameters)
+
+        if self.use_activation is not None:
+            self.activation = eval('nn.' + self.use_activation)()
+
+    def forward(self, feats):
+        x = feats[[i for i in feats][-1]]  # 取最后一个，feats会保存每一层的输出
+        feat = self.flatten(x) if self.pre_flatten else x
+        feat = self.linear(feat)
+        if self.use_activation is not None:
+            feat = self.activation(feat)
+            if self.use_activation == 'Tanh':
+                feat = feat / 2 + 0.5
+                feat = 0.999 * feat
+        feats.update({self.layer_name: feat})
+        return feats
+
+
 class Model(nn.Module):
     """docstring for Model"""
 
@@ -93,6 +119,9 @@ class Model(nn.Module):
                                  for i in range(layer_config['reuse_times'])}
                 if layer_type == 'concat':
                     layer = {layer_name: ConcatLayer(layer_name, layer_config)}
+                if layer_type == 'linear':
+                    layer = {layer_name: LinearBlock(layer_name, layer_config)}
+
                 self.layer_names.update({layer_name: [i for i in layer]})
                 model_dict.update({layer_name: nn.ModuleDict(layer)})
             self.model_names.update({model_name: self.layer_names})
