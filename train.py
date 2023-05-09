@@ -61,7 +61,7 @@ class Trainer:
         self.gene_iter = 0  # 生成器训练轮数（一回合会有多轮训练）
 
     def runer(self):
-        for epoch in range(1, self.base_train_config['epoch'] + 1):
+        for epoch in range(self.base_train_config['epoch']):
             self.epoch = epoch
             self.train_discriminator()
             self.train_generator()
@@ -122,6 +122,7 @@ class Trainer:
 
                 train_times += 1
                 self.disc_iter += 1
+                epoch_loss = d_history.avg
                 self.runs.log({
                     'disc/total': d_history.avg,
                     'disc/vi': dv_history.avg,
@@ -192,6 +193,7 @@ class Trainer:
 
                 train_times += 1
                 self.gene_iter += 1
+                epoch_loss = g_history.avg
                 self.runs.log({
                     'gene/total': g_history.avg,
                     'gene/con': g_con_history.avg,
@@ -210,14 +212,14 @@ class Trainer:
         lr_max = 0.1  # 最大值
         lr_min = 1e-5  # 最小值
         if cur_iter < warm_up_iter:
-            return cur_iter / warm_up_iter
+            return (cur_iter + 1) / warm_up_iter
         else:
             cosine_decay = 0.5 * (1.0 + math.cos((cur_iter - warm_up_iter) / (t_max - warm_up_iter) * math.pi))
             return (lr_min + (lr_max - lr_min) * cosine_decay) / 0.1
 
 
 if __name__ == '__main__':
-    trainer = Trainer(project_name='GAN_G1_D2_COLOR_TST',
+    trainer = Trainer(project_name='GAN_G1_D2_COLOR_TST_1',
                       config_path='./config/GAN_G1_D2_color_spl_disc.yaml',
                       wandb_key=f'49deeeb7e29fb1acb9e77e00885bc52d739dee0f')
     trainer.runer()

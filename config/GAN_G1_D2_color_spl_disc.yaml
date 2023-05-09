@@ -8,27 +8,27 @@ Train:
   Base:
     batch_size: 2
     epoch: 100
-    continue: False
-    gene_path: 'weights/GAN_G1_D2_COLOR/generator/generator_96.pth'
-    disc_path: 'weights/GAN_G1_D2_COLOR/discriminator/discriminator_96.pth'
+    continue: True
+    gene_path: 'weights/GAN_G1_D2_COLOR_TST_1/generator/generator_7.pth'
+    disc_path: 'weights/GAN_G1_D2_COLOR_TST_1/discriminator/discriminator_7.pth'
   Generator:
     lr: 0.01
     opt: RMSprop
     warm_up_epoch: 10
-    train_times_per_epoch: 5
-    min_loss_per_epoch: 0
+    train_times_per_epoch: 3
+    min_loss_per_epoch: -2
 
   Discriminator:
     lr: 0.001
     opt: SGD
-    train_times_per_epoch: 5
+    train_times_per_epoch: 3
     min_loss_per_epoch: 0.1
 
 Generator:
   Generator_Name: ['Generator_1']
   Input_Datasets: [['Vis','Inf']]
   Dist_Loss: [['Generator_1','Vis'],['Generator_1','Inf']]
-  Loss_Dist_weight: 1
+  Loss_Dist_weight: 100
   Loss_adv_weight: 1
 
 Discriminator:

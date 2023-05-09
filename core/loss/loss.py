@@ -19,7 +19,8 @@ class L_con(nn.Module):
         self.eta = eta
 
     def forward(self, G, v, i):
-        I = torch.pow(torch.pow((G - i), 2).sum(), 0.5) / (G.shape[2])
+        # I = torch.pow(torch.pow((G - i), 2).sum(), 0.5) / (G.shape[2])
+        I = nn.MSELoss()(G, i)
         r = G - v
         [W, H] = r.shape[2:4]
         tv1 = torch.pow((r[:, :, 1:, :] - r[:, :, :H - 1, :]), 2).mean()
