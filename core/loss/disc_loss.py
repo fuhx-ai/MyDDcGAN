@@ -31,4 +31,4 @@ class DiscriminatorLoss(nn.Module):
         loss_dv = self.l_dv(dv, conf_v)
         loss_di = self.l_di(di, conf_i)
         loss_d = loss_dv + loss_di
-        return loss_d
+        return loss_d, loss_dv, loss_di

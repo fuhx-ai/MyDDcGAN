@@ -32,12 +32,12 @@ class GeneratorLoss(nn.Module):
         # loss_g = self.adv_weight * loss_adv + self.con_weight * loss_con
 
         disc_name = [i for i in disc]
-        loss_dist = 0
+        loss_con = 0
         for i in self.Dist_Loss:
-            loss_dist = loss_dist + self.MSELoss(generator[i[0]], inputs[i[1]])
+            loss_con = loss_con + self.MSELoss(generator[i[0]], inputs[i[1]])
         loss_adv = 0
         for i in disc_name:
             loss_adv = loss_adv + self.MSELoss(disc[i], conf[i])
-        loss_g = self.con_weight * loss_dist + self.adv_weight * loss_adv
+        loss_g = self.con_weight * loss_con + self.adv_weight * loss_adv
 
-        return loss_g
+        return loss_g, loss_con, loss_adv
