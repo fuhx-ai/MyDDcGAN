@@ -8,7 +8,7 @@ Train:
   Base:
     batch_size: 2
     epoch: 100
-    continue: True
+    continue: False
     gene_path: 'weights/GAN_G1_D2_COLOR_TST_1/generator/generator_7.pth'
     disc_path: 'weights/GAN_G1_D2_COLOR_TST_1/discriminator/discriminator_7.pth'
   Generator:
