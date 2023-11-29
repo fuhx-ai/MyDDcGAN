@@ -22,22 +22,22 @@ import cv2
 
 
 if __name__ == '__main__':
-    ir = gray_read('demo/ir_0.png')
+    ir = gray_read('demo/03998/ir.png')
     trans = transforms.Compose([
         transforms.Resize([768, 1024]),
     ])
     ir = trans(ir)
-    vi, cbcr = ycbcr_read('demo/vis_0.png')
+    vi, cbcr = ycbcr_read('demo/03998/vi.png')
     vi = trans(vi)
     cbcr = trans(cbcr)
     data = {'Vis': vi.unsqueeze(0), 'Inf': ir.unsqueeze(0)}
-    config = load_config('config/GAN_G1_D2_grey.yaml')
+    config = load_config('config/GAN_G1_D2_color_spl_disc.yaml')
     GAN_Model = FuseModel(config, val=True)
-    GAN_Model.Generator.load_state_dict(torch.load('weights/GAN_G1_D2_grey/generator/generator_69.pth'))
+    GAN_Model.Generator.load_state_dict(torch.load('weights/GAN_G1_D2_COLOR_TST_2/generator/generator_99.pth'))
     GAN_Model.eval()
     Generator_feats, _, _ = GAN_Model(data)
     fuse = Generator_feats['Generator_1'][0]
 
     re = torch.cat([fuse, cbcr], dim=0)
     re = ycbcr_to_rgb(re)
-    img_write(re, './demo/vis_t_0.png')
+    img_write(re, 'demo/03998/res.png')
