@@ -8,15 +8,15 @@
 
 
 from torch import nn
-from core.loss.loss import L_Di, L_Dv
+from core.loss.loss import LossDi, LossDv
 
 
 class DiscriminatorLoss(nn.Module):
     def __init__(self, disc_cfg):
         super().__init__()
         self.MSELoss = nn.MSELoss()
-        self.l_dv = L_Dv()
-        self.l_di = L_Di()
+        self.l_dv = LossDv()
+        self.l_di = LossDi()
 
     def forward(self, gene, disc, conf):
         # disc_name = [i for i in disc]

@@ -8,7 +8,7 @@
 
 
 from torch import nn
-from core.loss.loss import L_G, L_adv_G, L_con
+from core.loss.loss import LossG, LossAdvG, LossCon
 
 
 class GeneratorLoss(nn.Module):
@@ -20,8 +20,8 @@ class GeneratorLoss(nn.Module):
         self.con_weight = generator_cfg['Loss_Dist_weight']
         self.Dist_Loss = generator_cfg['Dist_Loss']  # [['Generator_1','Vis'],['Generator_1','Inf']]
         self.MSELoss = nn.MSELoss()
-        self.l_adv_g = L_adv_G()
-        self.l_con_g = L_con()
+        self.l_adv_g = LossAdvG()
+        self.l_con_g = LossCon()
 
     def forward(self, inputs, generator, disc, conf):
         fuse = generator['Generator_1']
