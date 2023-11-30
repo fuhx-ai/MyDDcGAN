@@ -16,12 +16,16 @@ class GeneratorLoss(nn.Module):
 
     def __init__(self, generator_cfg):
         super().__init__()
-        self.adv_weight = generator_cfg['Loss_adv_weight']
-        self.con_weight = generator_cfg['Loss_Dist_weight']
-        self.Dist_Loss = generator_cfg['Dist_Loss']  # [['Generator_1','Vis'],['Generator_1','Inf']]
+        # self.adv_weight = generator_cfg['Loss_adv_weight']
+        # self.con_weight = generator_cfg['Loss_Dist_weight']
+        # self.Dist_Loss = generator_cfg['Dist_Loss']  # [['Generator_1','Vis'],['Generator_1','Inf']]
+        con_vis_weight, con_ir_weight, con_tv_weight, con_weight = generator_cfg['con_vis_weight'], \
+            generator_cfg['con_ir_weight'], generator_cfg['con_tv_weight'], generator_cfg['con_weight']
+        self.con_weight = con_weight
         self.MSELoss = nn.MSELoss()
         self.l_adv_g = LossAdvG()
-        self.l_con_g = LossCon()
+        self.l_con_g = LossCon(con_vis_weight, con_ir_weight, con_tv_weight)
+        self.l_g = LossG(con_weight, con_vis_weight, con_ir_weight, con_tv_weight)
 
     def forward(self, inputs, generator, disc, conf):
         fuse = generator['Generator_1']
@@ -29,7 +33,7 @@ class GeneratorLoss(nn.Module):
         dv, di = disc['Discriminator_1'], disc['Discriminator_2']
         loss_adv = self.l_adv_g(dv, di)
         loss_con = self.l_con_g(fuse, vi, ir)
-        loss_g = self.adv_weight * loss_adv + self.con_weight * loss_con
+        loss_g = loss_adv + self.con_weight * loss_con
 
         # disc_name = [i for i in disc]
         # loss_con = 0

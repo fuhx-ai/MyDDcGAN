@@ -55,13 +55,13 @@ class Trainer:
         self.gene_scheduler = LambdaLR(self.opt_generator, lr_lambda=self.get_learning_rate)
 
         self.epoch = 1
-        self.disc_loss_ep = []  # 判别器loss [d_his.avg, dv_his.avg, di_his.avg]
-        self.gene_loss_ep = []  # 生成器loss [g_his.avg, g_con_his.avg, g_adv_his.avg]
+        self.disc_loss_ep = []  # 各个epoch判别器loss [d_his.avg, dv_his.avg, di_his.avg]
+        self.gene_loss_ep = []  # 各个epoch生成器loss [g_his.avg, g_con_his.avg, g_adv_his.avg]
         self.disc_iter = 0  # 判别器训练轮数（一回合会有多轮训练）
         self.gene_iter = 0  # 生成器训练轮数（一回合会有多轮训练）
 
     def runer(self):
-        for epoch in range(self.base_train_config['epoch']):
+        for epoch in range(1, self.base_train_config['epoch'] + 1):
             self.epoch = epoch
             self.train_discriminator()
             self.train_generator()
@@ -92,7 +92,7 @@ class Trainer:
 
         num_iter = len(self.train_loader)
         train_times_per_epoch = self.discriminator_train_config['train_times_per_epoch']  # 一回合最多训练轮数
-        min_loss_per_epoch = self.discriminator_train_config['min_loss_per_epoch']  # 小于该loss则不再训练
+        min_loss_per_epoch = self.discriminator_train_config['min_loss_per_epoch']  # 小于该loss则不再训练判别器，防止判别器过强
         train_times = 0
         epoch_loss = min_loss_per_epoch
         d_his = AverageMeter()
@@ -219,7 +219,7 @@ class Trainer:
 
 
 if __name__ == '__main__':
-    trainer = Trainer(project_name='GAN_G1_D2_COLOR_TST_2',
+    trainer = Trainer(project_name='GAN_G1_D2_tst1',
                       config_path='./config/GAN_G1_D2_color_spl_disc.yaml',
                       wandb_key=f'49deeeb7e29fb1acb9e77e00885bc52d739dee0f')
     trainer.runer()

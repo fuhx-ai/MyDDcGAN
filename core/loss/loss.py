@@ -48,7 +48,7 @@ class LossAdvG(nn.Module):
 class LossG(nn.Module):
     """generator总损失，对抗损失+内容损失"""
 
-    def __init__(self, lam=0.5, eta_vis=10, eta_ir=0.12, eta_tv=1.2):
+    def __init__(self, lam=0.5, eta_vis=1, eta_ir=1.2, eta_tv=1.2):
         super(LossG, self).__init__()
         self.lam = lam
         self.loss_con = LossCon(eta_vis, eta_ir, eta_tv)
